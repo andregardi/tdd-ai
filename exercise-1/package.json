@@ -11,5 +11,8 @@
   "description": "",
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "words-to-numbers": "^1.5.1"
   }
 }
