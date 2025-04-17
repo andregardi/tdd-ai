@@ -8,6 +8,8 @@ function App() {
   const [error, setError] = useState(null);
 
   const handleSearch = async () => {
+    if (!username.trim()) return;
+    
     setLoading(true);
     setError(null);
     
@@ -25,36 +27,74 @@ function App() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="App">
-      <h1>Github search</h1>
+      <h1>GitHub User Search</h1>
       
-      <div>
-        <label htmlFor="username">User Name</label>
-        <input 
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <button 
-          aria-label="Search"
-          onClick={handleSearch}
-        >
-          Search
-        </button>
+      <div className="search-container">
+        <div className="search-form">
+          <label htmlFor="username">User Name</label>
+          <input 
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search GitHub username..."
+          />
+          <button 
+            aria-label="Search"
+            onClick={handleSearch}
+          >
+            Search
+          </button>
+        </div>
       </div>
 
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <span>Searching...</span>
+        </div>
+      )}
       
-      {error && <p>Error: {error}</p>}
+      {error && (
+        <div className="error-message">
+          Error: {error}
+        </div>
+      )}
       
       {userData && !loading && !error && (
-        <div>
-          <h2>{userData.name}</h2>
-          <img src={userData.avatar_url} alt="User avatar" width="100" />
-          <p>Followers: {userData.followers}</p>
-          <p>Public repos: {userData.public_repos}</p>
-          <a href={userData.html_url} target="_blank" rel="noopener noreferrer">
+        <div className="user-profile">
+          <h2>{userData.name || userData.login}</h2>
+          <img 
+            className="user-avatar"
+            src={userData.avatar_url} 
+            alt={`${userData.login}'s avatar`}
+          />
+          
+          <div className="user-stats">
+            <div className="stat-item">
+              <span className="stat-value">{userData.followers}</span>
+              <span className="stat-label">Followers</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{userData.public_repos}</span>
+              <span className="stat-label">Public repos</span>
+            </div>
+          </div>
+          
+          <a 
+            className="profile-link"
+            href={userData.html_url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
             View Profile
           </a>
         </div>

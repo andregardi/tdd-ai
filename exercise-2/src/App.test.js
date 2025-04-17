@@ -6,12 +6,13 @@ import App from './App';
 describe('App', () => {
   it('should render', () => {
     render(<App />);
-    expect(screen.getByText('Github search')).toBeInTheDocument();
+    expect(screen.getByText('GitHub User Search')).toBeInTheDocument();
   });
 
   it('should display user data after a successful fetch', async () => {
     const mockUserData = { 
       name: 'Test User', 
+      login: 'testuser',
       avatar_url: 'https://example.com/avatar.jpg',
       followers: 100,
       public_repos: 20,
@@ -34,17 +35,19 @@ describe('App', () => {
 
     
     expect(fetch).toHaveBeenCalledWith('https://api.github.com/users/testuser');
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('Searching...')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('Test User')).toBeInTheDocument();
-      expect(screen.getByText('Followers: 100')).toBeInTheDocument();
-      expect(screen.getByText('Public repos: 20')).toBeInTheDocument();
+      expect(screen.getByText('100')).toBeInTheDocument();
+      expect(screen.getByText('Followers')).toBeInTheDocument();
+      expect(screen.getByText('20')).toBeInTheDocument();
+      expect(screen.getByText('Public repos')).toBeInTheDocument();
       expect(screen.getByText('View Profile')).toBeInTheDocument();
-      expect(screen.getByAltText('User avatar')).toHaveAttribute('src', 'https://example.com/avatar.jpg');
+      expect(screen.getByAltText(`testuser's avatar`)).toHaveAttribute('src', 'https://example.com/avatar.jpg');
     });
 
-    expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
   });
 
   it('should show error message when fetch fails', async () => {
@@ -62,13 +65,13 @@ describe('App', () => {
     const searchButton = screen.getByLabelText('Search');
     userEvent.click(searchButton);
     
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('Searching...')).toBeInTheDocument();
     expect(fetch).toHaveBeenCalledWith('https://api.github.com/users/nonexistentuser');
 
     await waitFor(() => {
       expect(screen.getByText('Error: User not found')).toBeInTheDocument();
     });
 
-    expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
   });
 });
